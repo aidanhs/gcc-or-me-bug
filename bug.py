@@ -14,11 +14,11 @@ class Buf:
     def eat(self, count):
         self.start += count
 
-    def get(self, count):
-        v = buffer(self.data, self.start, count)
-        self.start += count
-        return v
-
     def used(self):
         return len(self.data) - self.start
 
+import _hashsplit
+buf = Buf()
+buf.put(open("sampledata").read())
+print buf.peek(4)
+print [x for x in _hashsplit._splitbuf(buf, 5, 5)]
