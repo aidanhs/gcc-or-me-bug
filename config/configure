@@ -1,0 +1,77 @@
+#!/bin/sh
+
+bup_find_prog()
+{
+    # Prints prog path to stdout or nothing.
+    local name="$1" result="$2"
+    TLOGN "checking for $name"
+    if ! [ "$result" ]; then
+        result=`acLookFor "$name"`
+    fi
+    TLOG " ($result)"
+    echo "$result"
+}
+
+TARGET=bup
+
+. ./configure.inc
+
+AC_INIT $TARGET
+
+if ! AC_PROG_CC; then
+    LOG " You need to have a functional C compiler to build $TARGET"
+    exit 1
+fi
+
+MAKE="$(bup_find_prog make $MAKE)"
+if test -z "$MAKE"; then
+    MAKE="$(bup_find_prog gmake "$GMAKE")"
+fi
+
+if test -z "$MAKE"; then
+    AC_FAIL "ERROR: unable to find make"
+fi
+
+if ! ($MAKE --version | grep "GNU Make"); then
+    AC_FAIL "ERROR: $MAKE is not GNU Make"
+fi
+
+MAKE_VERSION=`$MAKE --version | grep "GNU Make" | awk '{print $3}'`
+if [ -z "$MAKE_VERSION" ]; then
+    AC_FAIL "ERROR: $MAKE --version does not return sensible output?"
+fi
+expr "$MAKE_VERSION" '>=' '3.81' || AC_FAIL "ERROR: $MAKE must be >= version 3.81"
+
+if test -z "$(bup_find_prog python '')"; then
+    AC_FAIL "ERROR: unable to find python"
+fi
+
+if test -z "$(bup_find_prog git '')"; then
+    AC_FAIL "ERROR: unable to find git"
+fi
+
+# For stat.
+AC_CHECK_HEADERS sys/stat.h
+AC_CHECK_HEADERS sys/types.h
+AC_CHECK_HEADERS unistd.h
+
+# For FS_IOC_GETFLAGS and FS_IOC_SETFLAGS.
+AC_CHECK_HEADERS linux/fs.h
+AC_CHECK_HEADERS sys/ioctl.h
+
+# On GNU/kFreeBSD utimensat is defined in GNU libc, but won't work.
+if [ -z "$OS_GNU_KFREEBSD" ]; then
+    AC_CHECK_FUNCS utimensat
+fi
+AC_CHECK_FUNCS utimes
+AC_CHECK_FUNCS lutimes
+
+AC_CHECK_FIELD stat st_atim sys/types.h sys/stat.h unistd.h
+AC_CHECK_FIELD stat st_mtim sys/types.h sys/stat.h unistd.h
+AC_CHECK_FIELD stat st_ctim sys/types.h sys/stat.h unistd.h
+
+AC_CHECK_FIELD stat st_atimensec sys/types.h sys/stat.h unistd.h
+AC_CHECK_FIELD stat st_mtimensec sys/types.h sys/stat.h unistd.h
+AC_CHECK_FIELD stat st_ctimensec sys/types.h sys/stat.h unistd.h
+
+AC_OUTPUT config.vars
