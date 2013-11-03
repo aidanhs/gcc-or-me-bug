@@ -12,7 +12,3 @@ _hashsplit.so: \
 		python hscsetup.py build && which gcc \
 	)
 	cp build/*/_hashsplit.so .
-
-%: %.py
-	rm -f $@
-	ln -s $< $@
