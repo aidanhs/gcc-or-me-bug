@@ -30,13 +30,8 @@ install: all
 %/clean:
 	$(MAKE) -C $* clean
 
-config/config.h: config/Makefile config/configure config/configure.inc \
-		$(wildcard config/*.in)
-	cd config && $(MAKE) config.h
-
 PATHCMD := "PATH=/home/aidanhs/Desktop/apparicon/compiler/gcc-4.8.2-build/dist/bin:$$PATH"
 lib/bup/_hashsplit$(SOEXT): \
-		config/config.h \
 		lib/bup/bupsplit.c lib/bup/_hashsplit.c lib/bup/hscsetup.py
 	@rm -f $@
 	cd lib/bup && \

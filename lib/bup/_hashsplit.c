@@ -1,7 +1,6 @@
 #define _LARGEFILE64_SOURCE 1
 #define PY_SSIZE_T_CLEAN 1
 #undef NDEBUG
-#include "../../config/config.h"
 
 // According to Python, its header has to go first:
 //   http://docs.python.org/2/c-api/intro.html#include-files
@@ -71,7 +70,7 @@ static PyObject* splitbuf_iternext(PyObject *self)
         Py_DECREF(tmp);
         level = (bits - s->basebits) / s->fanbits;
         // THIS LINE BELOW TRIGGERS BUG
-        printf("%d\n", bits);
+        //printf("%d\n", bits);
         memcpy(s->prevbuf, bufpeekbytes, ofs);
         PyObject *retbuf = PyBuffer_FromMemory(s->prevbuf, ofs);
         if (retbuf == NULL)
