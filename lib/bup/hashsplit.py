@@ -41,23 +41,21 @@ class Buf:
         return len(self.data) - self.start
 
 
-import _hashsplit
-readfile_iter = _hashsplit.readfile_iter
-#def readfile_iter(files, progress=None):
-#    for filenum,f in enumerate(files):
-#        ofs = 0
-#        b = ''
-#        while 1:
-#            if progress:
-#                progress(filenum, len(b))
-#            if ofs > 1024*1024:
-#                fadvise_done(f, ofs - 1024*1024)
-#            b = f.read(BLOB_READ_SIZE)
-#            ofs += len(b)
-#            if not b:
-#                fadvise_done(f, ofs)
-#                break
-#            yield b
+def readfile_iter(files, progress=None):
+    for filenum,f in enumerate(files):
+        ofs = 0
+        b = ''
+        while 1:
+            if progress:
+                progress(filenum, len(b))
+            if ofs > 1024*1024:
+                fadvise_done(f, ofs - 1024*1024)
+            b = f.read(BLOB_READ_SIZE)
+            ofs += len(b)
+            if not b:
+                fadvise_done(f, ofs)
+                break
+            yield b
 
 
 def _splitbuf(buf, basebits, fanbits):
@@ -77,6 +75,7 @@ def _splitbuf(buf, basebits, fanbits):
         yield buf.get(BLOB_MAX), 0
 
 
+import _hashsplit
 def _hashsplit_iter(files, progress):
     assert(BLOB_READ_SIZE > BLOB_MAX)
     basebits = _helpers.blobbits()
