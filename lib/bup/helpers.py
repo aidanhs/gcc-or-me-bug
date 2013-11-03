@@ -2,7 +2,7 @@
 
 import sys, os, pwd, subprocess, errno, socket, select, mmap, stat, re, struct
 import hashlib, heapq, operator, time, grp
-from bup import _version, _helpers
+from bup import _helpers
 import bup._helpers as _helpers
 import math
 
