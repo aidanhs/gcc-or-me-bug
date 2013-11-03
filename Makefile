@@ -8,9 +8,7 @@ endif
 
 default: all
 
-all: bup
-
-bup: lib/bup/_helpers$(SOEXT) lib/bup/_hashsplit$(SOEXT)
+all: lib/bup/_hashsplit$(SOEXT)
 
 INSTALL=install
 PYTHON=python
@@ -36,14 +34,6 @@ config/config.h: config/Makefile config/configure config/configure.inc \
 		$(wildcard config/*.in)
 	cd config && $(MAKE) config.h
 
-lib/bup/_helpers$(SOEXT): \
-		config/config.h \
-		lib/bup/bupsplit.c lib/bup/_helpers.c lib/bup/csetup.py
-	@rm -f $@
-	cd lib/bup && \
-	LDFLAGS="$(LDFLAGS)" CFLAGS="$(CFLAGS)" $(PYTHON) csetup.py build
-	cp lib/bup/build/*/_helpers$(SOEXT) lib/bup/
-
 PATHCMD := "PATH=/home/aidanhs/Desktop/apparicon/compiler/gcc-4.8.2-build/dist/bin:$$PATH"
 lib/bup/_hashsplit$(SOEXT): \
 		config/config.h \
@@ -52,10 +42,6 @@ lib/bup/_hashsplit$(SOEXT): \
 	cd lib/bup && \
 	(export $(PATHCMD) LDFLAGS="$(LDFLAGS)" CFLAGS="$(CFLAGS)" && $(PYTHON) hscsetup.py build && which gcc)
 	cp lib/bup/build/*/_hashsplit$(SOEXT) lib/bup/
-
-bup: main.py
-	rm -f $@
-	ln -s $< $@
 
 %: %.py
 	rm -f $@
