@@ -19,9 +19,7 @@ PREFIX=/usr
 BINDIR=$(DESTDIR)$(PREFIX)/bin
 LIBDIR=$(DESTDIR)$(PREFIX)/lib/bup
 install: all
-	$(INSTALL) -d $(BINDIR) \
-		$(LIBDIR)/bup $(LIBDIR)/cmd $(LIBDIR)/tornado \
-		$(LIBDIR)/web $(LIBDIR)/web/static
+	$(INSTALL) -d $(BINDIR) $(LIBDIR)/bup
 	$(INSTALL) -pm 0755 bup $(BINDIR)
 	$(INSTALL) -pm 0755 \
 		cmd/bup-* \
@@ -32,15 +30,6 @@ install: all
 	$(INSTALL) -pm 0755 \
 		lib/bup/*$(SOEXT) \
 		$(LIBDIR)/bup
-	$(INSTALL) -pm 0644 \
-		lib/tornado/*.py \
-		$(LIBDIR)/tornado
-	$(INSTALL) -pm 0644 \
-		lib/web/static/* \
-		$(LIBDIR)/web/static/
-	$(INSTALL) -pm 0644 \
-		lib/web/*.html \
-		$(LIBDIR)/web/
 %/all:
 	$(MAKE) -C $* all
 
