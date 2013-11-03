@@ -1,8 +1,6 @@
 from distutils.core import setup, Extension
 
-_hashsplit_mod = Extension('_hashsplit',
-                         sources=['_hashsplit.c', 'bupsplit.c'],
-                         depends=['../../config/config.h'])
+_hashsplit_mod = Extension('_hashsplit', sources=['_hashsplit.c', 'bupsplit.c'])
 
 setup(name='_hashsplit',
       version='0.1',
