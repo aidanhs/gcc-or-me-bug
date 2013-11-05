@@ -22,17 +22,6 @@ typedef struct {
     unsigned char prevbuf[BLOB_MAX];
 } splitbuf_state;
 
-static int splitbuf_actual(
-    const unsigned char *buf, Py_ssize_t len, int *ofsptr, int *bitsptr)
-{
-    int ofs = 0, bits = -1;
-
-    ofs = bupsplit_find_ofs(buf, len, &bits);
-    *ofsptr = ofs;
-    *bitsptr = bits;
-    return 0;
-}
-
 static PyObject* splitbuf_iternext(PyObject *self)
 {
     splitbuf_state *s = (splitbuf_state *)self;
@@ -54,8 +43,11 @@ static PyObject* splitbuf_iternext(PyObject *self)
     if (PyObject_AsCharBuffer(
             bufpeekobj, ((const char **)&bufpeekbytes), &bufpeeklen) == -1)
         return NULL;
-    if (splitbuf_actual(bufpeekbytes, bufpeeklen, &ofs, &bits) == -1)
-        return NULL;
+
+    int bits_ = -1;
+    ofs = bupsplit_find_ofs(bufpeekbytes, bufpeeklen, &bits_);
+    bits = bits_;
+
     Py_DECREF(bufpeekbytes);
     if (ofs) {
         PyObject *tmp = PyObject_CallMethod(s->bufobj, "eat", "i", ofs);
