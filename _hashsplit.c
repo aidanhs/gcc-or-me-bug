@@ -45,13 +45,13 @@ static PyObject* splitbuf_iternext(PyObject *self)
     Py_ssize_t bufpeeklen;
     int ofs, bits;
     int level;
-//
+
+    printf("ITERATION\n");
     bufused = PyObject_CallMethod(s->bufobj, "used", NULL);
     if (bufused == NULL)
         return NULL;
     bufpeekobj = PyObject_CallMethod(s->bufobj, "peek", "O", bufused);
     Py_DECREF(bufused);
-    printf("test %p\n", bufpeekbytes);
     if (bufpeekbytes == NULL)
         return NULL;
     if (PyObject_AsCharBuffer(
@@ -60,9 +60,6 @@ static PyObject* splitbuf_iternext(PyObject *self)
     if (splitbuf_actual(bufpeekbytes, bufpeeklen, &ofs, &bits) == -1)
         return NULL;
     Py_DECREF(bufpeekbytes);
-    if (ofs > BLOB_MAX)
-        ofs = BLOB_MAX;
-    printf("ofs %d\n", ofs);
     if (ofs) {
         PyObject *tmp = PyObject_CallMethod(s->bufobj, "eat", "i", ofs);
         if (tmp == NULL)
@@ -70,13 +67,9 @@ static PyObject* splitbuf_iternext(PyObject *self)
         Py_DECREF(tmp);
         level = (bits - s->basebits) / s->fanbits;
         // THIS LINE BELOW TRIGGERS BUG
-        //printf("%d\n", bits);
+        //printf("(ignore me) %d\n", bits);
         memcpy(s->prevbuf, bufpeekbytes, ofs);
-        PyObject *retbuf = PyBuffer_FromMemory(s->prevbuf, ofs);
-        if (retbuf == NULL)
-            return NULL;
-        printf("zzz\n");
-        return Py_BuildValue("Ni", retbuf, level);
+        return Py_BuildValue("i", level);
     }
 
     return NULL;
