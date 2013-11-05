@@ -27,10 +27,7 @@ static int splitbuf_actual(
 {
     int ofs = 0, bits = -1;
 
-    assert(len <= INT_MAX);
     ofs = bupsplit_find_ofs(buf, len, &bits);
-    if (ofs)
-        assert(bits >= BUP_BLOBBITS);
     *ofsptr = ofs;
     *bitsptr = bits;
     return 0;
