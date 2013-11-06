@@ -31,6 +31,7 @@ static PyObject* splitbuf_iternext(PyObject *self)
         return NULL;
     bufpeekobj = PyObject_CallMethod(s->bufobj, "peek", "O", bufused);
     Py_DECREF(bufused);
+    // BUG IS HERE, BUFPEEKBYTES MAY NOT BE DEFINED
     if (bufpeekbytes == NULL)
         return NULL;
     if (PyObject_AsCharBuffer(
