@@ -8,18 +8,11 @@
 
 #include "bupsplit.h"
 
-#define BLOB_READ_SIZE 1024*1024
-#define BLOB_MAX 8192*4
-
-/********************************************************/
-/********************************************************/
-
 typedef struct {
     PyObject_HEAD
     PyObject *bufobj;
     int basebits;
-    int fanbits;
-    unsigned char prevbuf[BLOB_MAX];
+    unsigned char prevbuf[8192*4];
 } splitbuf_state;
 
 static PyObject* splitbuf_iternext(PyObject *self)
@@ -54,7 +47,7 @@ static PyObject* splitbuf_iternext(PyObject *self)
         if (tmp == NULL)
             return NULL;
         Py_DECREF(tmp);
-        level = (bits - s->basebits) / s->fanbits;
+        level = (bits - s->basebits) / 5;
         // THIS LINE BELOW TRIGGERS BUG
         //printf("(ignore me) %d\n", bits);
         memcpy(s->prevbuf, bufpeekbytes, ofs);
@@ -68,13 +61,9 @@ static PyObject *
 splitbuf_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 {
     PyObject *bufobj;
-    int basebits;
-    int fanbits;
 
-    if (!PyArg_ParseTuple(args, "Oii:_splitbuf", &bufobj, &basebits, &fanbits))
+    if (!PyArg_ParseTuple(args, "O:_splitbuf", &bufobj))
         return NULL;
-
-    /* TODO: don't assume this is a buf object */
 
     splitbuf_state *state = (splitbuf_state *)type->tp_alloc(type, 0);
     if (!state)
@@ -82,8 +71,7 @@ splitbuf_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 
     Py_INCREF(bufobj);
     state->bufobj = bufobj;
-    state->basebits = basebits;
-    state->fanbits = fanbits;
+    state->basebits = 5;
 
     return (PyObject *)state;
 }
